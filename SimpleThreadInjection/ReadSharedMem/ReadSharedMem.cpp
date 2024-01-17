@@ -6,11 +6,11 @@
 
 int main()
 {
-    HANDLE hMapFile = OpenFileMapping(/*FILE_MAP_EXECUTE PAGE_EXECUTE_READ */ FILE_MAP_ALL_ACCESS , FALSE, L"SharedMemory");
+    HANDLE hMapFile = OpenFileMapping(/*FILE_MAP_EXECUTE PAGE_EXECUTE_READ  FILE_MAP_ALL_ACCESS*/ FILE_MAP_READ | FILE_MAP_WRITE | 0x0008, FALSE, L"SharedMemory");
     if (hMapFile == NULL) return 1;
     printf("FileMapping opened\n");
     // Проецирование разделяемой памяти в адресное пространство текущего процесса
-    LPVOID pBuf = MapViewOfFile(hMapFile, FILE_MAP_READ | FILE_MAP_EXECUTE | FILE_MAP_ALL_ACCESS, 0, 0, 1024);
+    LPVOID pBuf = MapViewOfFile(hMapFile, FILE_MAP_READ | FILE_MAP_WRITE | FILE_MAP_EXECUTE /* | FILE_MAP_ALL_ACCESS*/, 0, 0, 1024);
     if (pBuf == NULL) {
         DWORD err = GetLastError();
         printf("Error code: %d\n", err);
@@ -30,6 +30,7 @@ int main()
     printf("Thread Created\n");
 
     // Ожидание завершения потока
+
     WaitForSingleObject(hThread, INFINITE);
 
 
